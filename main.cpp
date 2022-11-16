@@ -85,6 +85,7 @@ int main() {
         //Initializez manual variabila
     int variabilaInit = 2000;   
     std::cout<<variabilaInit;
+    std::cout<<'\n';
         //Sa vedem ce se intampla daca nu initializam
     int variabilaNeinit;       
     std::cout<<variabilaNeinit;
@@ -112,6 +113,7 @@ int main() {
 
         //Testam pentru o clasa la care am constructor, dar nu am copy constr, copy assign si destructor
         //Se observa ca functiile mentionate au fost create de compilator, motiv pentru care le si putem folosi
+    //File f;  <= eroare pentru ca File are deja constructor
     File f1(fisier);
     std::cout<<(f1.toString());
     std::cout<<'\n';
