@@ -1,0 +1,3 @@
+/mnt/d/MY STUFF/ANUL 4/PAOO/Tema1Paoo/build/CMakeFiles/rebuild_cache.dir
+/mnt/d/MY STUFF/ANUL 4/PAOO/Tema1Paoo/build/CMakeFiles/edit_cache.dir
+/mnt/d/MY STUFF/ANUL 4/PAOO/Tema1Paoo/build/CMakeFiles/main.dir
