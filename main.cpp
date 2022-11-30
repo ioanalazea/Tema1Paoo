@@ -1,5 +1,5 @@
 #include <iostream>
-
+using namespace std;
 
 //Item 4   - using the member initialization list here
 class Directory{ 
@@ -28,18 +28,43 @@ Directory& dir(){
 
 class File{
 public:
-    File(const std::string& name, const std::string& extension, const int fileSize);
-    std::string toString();
-    
+    File(string name, string extension, int fileSize);
+    string toString();
+    // Getter
+    string getName() {
+      return this->theName;
+    }
+    string getExtension() {
+      return this->theExtension;
+    }
+    int getFileSize() {
+      return this->theFileSize;
+    }
+    File& operator=(File& other)           //ITEM 10: Have assignment operators return a reference to *this.
+    {
+        std::cout << "copy assignment of File\n";
+         if (this != &other) // not a self-assignment  ITEM 11: To handle assignment to self
+        {
+        this->theName= other.getName();
+        this->theExtension = other.getExtension();
+        this->theFileSize = other.getFileSize();
+        } 
+        else{
+            cout<<"Assignment to self\n";
+        }
+        return *this;           //ITEM 10: Have assignment operators return a reference to *this.
+
+    }
+
 private :
-    std::string theName;
-    std::string theExtension;
+    string theName;
+    string theExtension;
     int theFileSize;
 };
 
 
-File::File(const std::string& name, const std::string& extension, const int fileSize)
-    :theName(name),
+File::File(string name, string extension,int fileSize):
+    theName(name),
     theExtension(extension),
     theFileSize(fileSize)
     {}            
@@ -47,6 +72,7 @@ File::File(const std::string& name, const std::string& extension, const int file
 std::string File::toString(){
     return "Nume: "+ theName + theExtension + " Dimensiune fisier: " + std::to_string(theFileSize) + " KB" + "  Folder: " +  dir().toString();
 }
+
 
 
 
@@ -120,7 +146,7 @@ int main() {
     f1 = fisier;
     std::cout<<(f1.toString());
     f1.~File();
-
+    std::cout<<'\n';
 
     //Item 6 - Explicitly disallow the use of compiler generated function you do not want.
         //Prin faptul ca am facut ca UncopyableFile sa mosteneasca pe Uncopyable, copy constructorul si copy assignement operator nu pot fi accesate 
@@ -128,6 +154,25 @@ int main() {
     UncopyableFile u1("nusepoatecopia.txt");
         //UncopyableFile u2(u1);  trebuie puse in comentarii pentru ca altfel primim eroare
         //UncopyableFile u2 = u1;
+
+
+
+    //ITEM 10: Have assignment operators return a reference to *this
+    std::cout<<"ITEM 10";
+    std::cout<<'\n';
+
+    File f10("testItem10_1",".txt", 3);
+    File f11("testItem10_2",".txt", 4);
+    File f12("testItem10_3",".txt", 5);
+    
+    f10=f11=f12;
+    std::cout<<(f10.toString())<<'\n';
+
+    //ITEM 11: Handle assignment to self in operator=
+    std::cout<<"ITEM 11"<<'\n';
+    File item11("item11",".txt", 5);
+    item11=item11;
+    std::cout<<(item11.toString())<<'\n';
 
     return 0;
 }
