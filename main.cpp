@@ -1,7 +1,6 @@
 #include <iostream>
 using namespace std;
 
-//Item 4   - using the member initialization list here
 class Directory{ 
 public:
     Directory(const std::string& name);
@@ -11,6 +10,7 @@ private :
     std::string theName;
 };
 
+//Item 4   - using the member initialization list here
 
 Directory::Directory(const std::string& name)
 :theName(name)
@@ -24,6 +24,9 @@ Directory& dir(){
     static Directory dir("Folder1");                    //definesc local static object
     return dir;
 }
+
+
+
 
 
 class File{
@@ -45,9 +48,9 @@ public:
         std::cout << "copy assignment of File\n";
          if (this != &other) // not a self-assignment  ITEM 11: To handle assignment to self
         {
-        this->theName= other.getName();
-        this->theExtension = other.getExtension();
-        this->theFileSize = other.getFileSize();
+        this->theName= other.theName;
+        this->theExtension = other.theExtension;
+        this->theFileSize = other.theFileSize;
         } 
         else{
             cout<<"Assignment to self\n";
@@ -62,16 +65,48 @@ private :
     int theFileSize;
 };
 
-
+// constructor with parameters
 File::File(string name, string extension,int fileSize):
     theName(name),
     theExtension(extension),
     theFileSize(fileSize)
     {}            
 
+
 std::string File::toString(){
     return "Nume: "+ theName + theExtension + " Dimensiune fisier: " + std::to_string(theFileSize) + " KB" + "  Folder: " +  dir().toString();
 }
+
+
+//ITEM 12 here illustrated
+class SpecialFile : public File{
+    public:
+    SpecialFile(string name, string extension, int fileSize, int priority);
+    SpecialFile& operator=(SpecialFile& rhs);
+    std::string toString();
+
+    private:
+    int thePriority;
+};
+
+SpecialFile::SpecialFile(string name, string extension, int fileSize, int priority)
+:File(name, extension, fileSize),       // invoke base class copy ctor
+thePriority(priority)
+{}
+
+SpecialFile&SpecialFile::operator=(SpecialFile& rhs){
+    File::operator=(rhs);               // assign base class parts
+    thePriority = rhs.thePriority;
+
+    return *this;
+}
+
+std::string SpecialFile::toString(){
+    return File::toString() +", Priority: " + std::to_string(thePriority);
+}
+
+
+
 
 
 
@@ -173,6 +208,10 @@ int main() {
     File item11("item11",".txt", 5);
     item11=item11;
     std::cout<<(item11.toString())<<'\n';
+
+    //ITEM 12 Copy all parts of an object
+    SpecialFile special("VERYspecial",".txt",1000,1);
+    std::cout<<special.toString()<<'\n';
 
     return 0;
 }
