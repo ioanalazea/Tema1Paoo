@@ -43,6 +43,7 @@ public:
     int getFileSize() {
       return this->theFileSize;
     }
+
     File& operator=(File& other)           //ITEM 10: Have assignment operators return a reference to *this.
     {
         std::cout << "copy assignment of File\n";
@@ -56,7 +57,6 @@ public:
             cout<<"Assignment to self\n";
         }
         return *this;           //ITEM 10: Have assignment operators return a reference to *this.
-
     }
 
 private :
@@ -78,7 +78,7 @@ std::string File::toString(){
 }
 
 
-//ITEM 12 here illustrated
+//ITEM 12 here illustrated: Copy all parts of an object
 class SpecialFile : public File{
     public:
     SpecialFile(string name, string extension, int fileSize, int priority);
@@ -95,6 +95,9 @@ thePriority(priority)
 {}
 
 SpecialFile&SpecialFile::operator=(SpecialFile& rhs){
+    if (this == &rhs) return *this;     // identity test: if a self-assignment,
+                                        // do nothing
+
     File::operator=(rhs);               // assign base class parts
     thePriority = rhs.thePriority;
 
