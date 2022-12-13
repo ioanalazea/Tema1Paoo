@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 using namespace std;
 
 class Directory{ 
@@ -31,8 +32,21 @@ Directory& dir(){
 
 class File{
 public:
+    File(void);                            //default constructor
     File(string name, string extension, int fileSize);
     string toString();
+    File* createFile();                   //Item 13: Use objects to manage resources.
+
+    //Setter
+    void setName(string name){
+    this->theName = name;
+    }
+     void setExtension(string extension){
+    this->theExtension = extension;
+    }
+     void setFileSize(int fileSize){
+    this->theFileSize = fileSize;
+    }
     // Getter
     string getName() {
       return this->theName;
@@ -56,8 +70,10 @@ public:
         else{
             cout<<"Assignment to self\n";
         }
-        return *this;           //ITEM 10: Have assignment operators return a reference to *this.
+        return *this;                      //ITEM 10: Have assignment operators return a reference to *this.
     }
+
+    
 
 private :
     string theName;
@@ -70,12 +86,27 @@ File::File(string name, string extension,int fileSize):
     theName(name),
     theExtension(extension),
     theFileSize(fileSize)
-    {}            
+    {} 
 
+//default constructor              
+File::File():
+    theName(),
+    theExtension(),
+    theFileSize()
+    {}  
 
 std::string File::toString(){
     return "Nume: "+ theName + theExtension + " Dimensiune fisier: " + std::to_string(theFileSize) + " KB" + "  Folder: " +  dir().toString();
 }
+
+File* createFile(){                   //Item 13: Use objects to manage resources.
+    return (new File);
+}
+
+
+
+
+
 
 
 //ITEM 12 here illustrated: Copy all parts of an object
@@ -144,6 +175,16 @@ UncopyableFile::UncopyableFile(const std::string& name)
  {}
 
 
+//ITEM 13
+int RAII(){
+    File *f = createFile();
+    f->setFileSize(100);
+    if (f->getFileSize() != 0) return -1;
+    cout<<"got to delete\n";
+    delete f;
+    return 0;
+}
+
 int main() {
     //Item 4 - Make sure the objects are initialized
         //Initializez manual variabila
@@ -196,8 +237,7 @@ int main() {
 
 
     //ITEM 10: Have assignment operators return a reference to *this
-    std::cout<<"ITEM 10";
-    std::cout<<'\n';
+    std::cout<<"ITEM 10"<<'\n';
 
     File f10("testItem10_1",".txt", 3);
     File f11("testItem10_2",".txt", 4);
@@ -215,6 +255,30 @@ int main() {
     //ITEM 12 Copy all parts of an object
     SpecialFile special("VERYspecial",".txt",1000,1);
     std::cout<<special.toString()<<'\n';
+
+
+
+
+     //Item 13: Use objects to manage resources.
+    std::cout<<'\n'<<"ITEM 13"<<'\n';
+   
+    auto_ptr<File> f2(createFile());
+    f2->setFileSize(240);
+    auto_ptr<File> f3(f2);
+    //cout<<"\n"<<f2->getFileSize()<<"\n";       //Error Segmentation fault (core dumped) because f2 is now null
+    cout<<"\n"<<f3->getFileSize()<<"\n"; 
+
+    shared_ptr<File> f4(createFile());
+    f4->setFileSize(128);
+    shared_ptr<File> f5;
+    f5 = f4;
+    cout<<"\n"<<f4->getFileSize()<<"\n";       //both f4 and f5 now point to the object
+    cout<<"\n"<<f5->getFileSize()<<"\n";        //shared_ptr and auto_ptr release resources in their destructors -> prevent resource leaks
+                                                        
+
+    //RAII();
+    //the delete statement isn't reached
+
 
     return 0;
 }
