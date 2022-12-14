@@ -176,7 +176,7 @@ UncopyableFile::UncopyableFile(const std::string& name)
 
 
 //ITEM 13
-int RAII(){
+int noRAII(){
     File *f = createFile();
     f->setFileSize(100);
     if (f->getFileSize() != 0) return -1;
@@ -184,6 +184,72 @@ int RAII(){
     delete f;
     return 0;
 }
+
+
+
+
+//ITEM 14:Think carefully about copying behavior in resource-managing classes.
+class FileWithPassword{
+    private:
+        string theName;
+        bool confidential = false;
+    public:
+
+    FileWithPassword(string name){
+        this->theName = name;
+    }
+
+    FileWithPassword(const FileWithPassword &f){
+        this->theName = f.theName;
+        this->confidential = f.confidential;
+    }
+
+    ~FileWithPassword(){
+        std::cout<<"File with password deleted."<<std::endl;
+    }
+
+    string getName(){
+        return this->theName;
+    }
+
+    bool getConfidential(){
+        return this->confidential;
+    }
+
+    void setConfidential(bool confidential){
+        this->confidential = confidential;
+    }
+
+    void isFileConfidential(){
+        if(this->confidential == false) 
+            std::cout<<"The file "<< this->theName <<" is not confidential and doesn't have a password."<<"\n";
+        else
+            std::cout<<"The file "<<this->theName<<"is confidential and can't be accessed."<<"\n";
+    }
+
+};
+
+void lock(FileWithPassword &f){
+    f.setConfidential(true);
+}
+
+void unlock(FileWithPassword &f){
+    f.setConfidential(false);
+}
+
+class OwnerFileWithPassword{
+    private:
+        FileWithPassword &file;
+    public:
+    OwnerFileWithPassword(FileWithPassword &f):
+    file(f){
+        lock(file);
+    }
+    ~OwnerFileWithPassword(){
+        unlock(file);
+    }
+};
+
 
 int main() {
     //Item 4 - Make sure the objects are initialized
@@ -266,19 +332,28 @@ int main() {
     f2->setFileSize(240);
     auto_ptr<File> f3(f2);
     //cout<<"\n"<<f2->getFileSize()<<"\n";       //Error Segmentation fault (core dumped) because f2 is now null
-    cout<<"\n"<<f3->getFileSize()<<"\n"; 
+    std::cout<<"\n"<<f3->getFileSize()<<"\n"; 
 
     shared_ptr<File> f4(createFile());
     f4->setFileSize(128);
     shared_ptr<File> f5;
     f5 = f4;
-    cout<<"\n"<<f4->getFileSize()<<"\n";       //both f4 and f5 now point to the object
-    cout<<"\n"<<f5->getFileSize()<<"\n";        //shared_ptr and auto_ptr release resources in their destructors -> prevent resource leaks
+    std::cout<<"\n"<<f4->getFileSize()<<"\n";       //both f4 and f5 now point to the object
+    std::cout<<"\n"<<f5->getFileSize()<<"\n";        //shared_ptr and auto_ptr release resources in their destructors -> prevent resource leaks
                                                         
 
-    //RAII();
+    //noRAII();
     //the delete statement isn't reached
 
+
+    //ITEM 14: Think carefully about copying behavior in resource-managing classes.
+    std::cout<<'\n'<<"ITEM 14"<<'\n';
+    FileWithPassword fileWithPass("myCONFIDENTIALnotes.txt");
+    fileWithPass.isFileConfidential();                  //File unlocked doesn't have an owner yet.
+    std::cout<<"\n";
+    OwnerFileWithPassword owner(fileWithPass);          //Now the file will be "locked" since we created an owner.
+    fileWithPass.isFileConfidential();
+    std::cout<<"\n";
 
     return 0;
 }
