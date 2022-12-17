@@ -176,6 +176,7 @@ UncopyableFile::UncopyableFile(const std::string& name)
 
 
 //ITEM 13
+//Function to illustrate the premature return statement and how the delete statement is not reached.
 int noRAII(){
     File *f = createFile();
     f->setFileSize(100);
@@ -229,7 +230,7 @@ class FileWithPassword{
 
 };
 
-void lock(FileWithPassword &f){
+void lock(FileWithPassword &f){         //lock and unlock functions for managing resources
     f.setConfidential(true);
 }
 
@@ -237,7 +238,7 @@ void unlock(FileWithPassword &f){
     f.setConfidential(false);
 }
 
-class OwnerFileWithPassword{
+class OwnerFileWithPassword{            //owner will lock or unlock the file
     private:
         FileWithPassword &file;
     public:
